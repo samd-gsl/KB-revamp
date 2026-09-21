@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ginesys KB — Current State, Gaps &amp; Problems to Solve</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    --bg: #F6F8F5;
+    --paper: #FFFFFF;
+    --ink: #16231C;
+    --ink-soft: #4B5A50;
+    --line: #E1E7DE;
+    --accent: #2F6F4E;
+    --accent-deep: #163C29;
+    --accent-pale: #E4F1EA;
+
+    --t-completeness: #B4711A;
+    --t-completeness-bg: #FBEBD7;
+    --t-quality: #2B5FA3;
+    --t-quality-bg: #E4EEFA;
+    --t-accessibility: #2F6F4E;
+    --t-accessibility-bg: #E4F1EA;
+    --t-standardisation: #8C3A63;
+    --t-standardisation-bg: #F7E4ED;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10160F;
+      --paper: #171F16;
+      --ink: #E7ECE4;
+      --ink-soft: #9CAA9A;
+      --line: #2A342A;
+      --accent: #59B085;
+      --accent-deep: #A6D9BC;
+      --accent-pale: #1C3226;
+
+      --t-completeness: #E3A662;
+      --t-completeness-bg: #3A2C14;
+      --t-quality: #7CA8E0;
+      --t-quality-bg: #1B2A3D;
+      --t-accessibility: #6FCB9B;
+      --t-accessibility-bg: #16301F;
+      --t-standardisation: #D98BB0;
+      --t-standardisation-bg: #33202A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10160F;
+    --paper: #171F16;
+    --ink: #E7ECE4;
+    --ink-soft: #9CAA9A;
+    --line: #2A342A;
+    --accent: #59B085;
+    --accent-deep: #A6D9BC;
+    --accent-pale: #1C3226;
+
+    --t-completeness: #E3A662;
+    --t-completeness-bg: #3A2C14;
+    --t-quality: #7CA8E0;
+    --t-quality-bg: #1B2A3D;
+    --t-accessibility: #6FCB9B;
+    --t-accessibility-bg: #16301F;
+    --t-standardisation: #D98BB0;
+    --t-standardisation-bg: #33202A;
+  }
+
+  html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    line-height: 1.5;
+  }
+  h1, h2 {
+    font-family: "Lora", Georgia, "Times New Roman", serif;
+    margin: 0;
+  }
+
+  .band {
+    background: var(--accent-deep);
+    color: #F3F7F2;
+    padding: 48px 24px 32px;
+  }
+  .band-inner {
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    color: #BFE0CC;
+    font-size: 13px;
+    margin: 0 0 10px 0;
+  }
+  .band h1 {
+    font-size: clamp(24px, 4vw, 34px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.18);
+  }
+  .stat .num {
+    font-family: "Lora", Georgia, serif;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .stat .label {
+    font-size: 12.5px;
+    color: #BFE0CC;
+    margin-top: 6px;
+    max-width: 190px;
+  }
+
+  main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 36px 24px 64px;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    background: var(--paper);
+  }
+  .filter-chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .filter-chip.completeness .dot { background: var(--t-completeness); }
+  .filter-chip.quality .dot { background: var(--t-quality); }
+  .filter-chip.accessibility .dot { background: var(--t-accessibility); }
+  .filter-chip.standardisation .dot { background: var(--t-standardisation); }
+
+  h2.section-title {
+    font-size: 21px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .section-sub {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--paper);
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 980px;
+  }
+  thead th {
+    text-align: left;
+    font-size: 11.5px;
+    letter-spacing: 0.01em;
+    color: var(--ink-soft);
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--line); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr.theme-Completeness { border-left: 3px solid var(--t-completeness); }
+  tbody tr.theme-Quality { border-left: 3px solid var(--t-quality); }
+  tbody tr.theme-Accessibility { border-left: 3px solid var(--t-accessibility); }
+  tbody tr.theme-Standardisation { border-left: 3px solid var(--t-standardisation); }
+  td {
+    padding: 14px;
+    vertical-align: top;
+    font-size: 13.5px;
+  }
+  td.num {
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    width: 30px;
+  }
+  td.problem { min-width: 260px; max-width: 320px; }
+  .pill {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+  }
+  .pill.Completeness { color: var(--t-completeness); background: var(--t-completeness-bg); }
+  .pill.Quality { color: var(--t-quality); background: var(--t-quality-bg); }
+  .pill.Accessibility { color: var(--t-accessibility); background: var(--t-accessibility-bg); }
+  .pill.Standardisation { color: var(--t-standardisation); background: var(--t-standardisation-bg); }
+  .problem-text { font-weight: 600; }
+  td.happening { min-width: 300px; max-width: 380px; color: var(--ink-soft); }
+  td.happening .row { margin-bottom: 4px; }
+  td.happening .row:last-child { margin-bottom: 0; }
+  td.happening b { color: var(--ink); font-weight: 600; }
+  td.risk { min-width: 220px; max-width: 280px; color: var(--ink-soft); }
+  td.source { min-width: 150px; color: var(--ink-soft); }
+  td.link { width: 70px; }
+  .open-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 13px;
+  }
+  .open-link:hover { background: var(--accent-pale); }
+  .dash { color: var(--ink-soft); }
+
+  .next-steps {
+    margin-top: 44px;
+  }
+  ol.steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 0;
+    padding: 0;
+  }
+  ol.steps > li {
+    counter-increment: step;
+    position: relative;
+    padding: 16px 0 16px 44px;
+    border-bottom: 1px solid var(--line);
+  }
+  ol.steps > li:last-child { border-bottom: none; }
+  ol.steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 16px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent-pale);
+    color: var(--accent-deep);
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  ol.steps strong { display: block; margin-bottom: 4px; }
+  ul.substeps {
+    margin: 8px 0 0 0;
+    padding-left: 18px;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+  }
+  ul.substeps li { margin-bottom: 3px; }
+
+  footer {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 24px 40px;
+    color: var(--ink-soft);
+    font-size: 12.5px;
+  }
+
+  @media (max-width: 640px) {
+    .band { padding: 36px 18px 26px; }
+    main { padding: 28px 18px 48px; }
+    .stats { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="band">
+  <div class="band-inner">
+    <h1>Current State, Gaps &amp; Problems to Solve</h1>
+    <div class="stats">
+      <div class="stat"><div class="num">26</div><div class="label">distinct problems identified</div></div>
+      <div class="stat"><div class="num">10</div><div class="label">Completeness</div></div>
+      <div class="stat"><div class="num">6</div><div class="label">Quality</div></div>
+      <div class="stat"><div class="num">7</div><div class="label">Accessibility</div></div>
+      <div class="stat"><div class="num">3</div><div class="label">Standardisation</div></div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="filters">
+    <a class="filter-chip completeness" href="#row-1"><span class="dot"></span>Completeness</a>
+    <a class="filter-chip quality" href="#row-11"><span class="dot"></span>Quality</a>
+    <a class="filter-chip accessibility" href="#row-17"><span class="dot"></span>Accessibility</a>
+    <a class="filter-chip standardisation" href="#row-24"><span class="dot"></span>Standardisation</a>
+  </div>
+
+  <h2 class="section-title">Feedback &amp; Gaps Identified</h2>
+  <p class="section-sub">Drawn from stakeholder feedback: Rohit Khetan, Vinay, JP, OMS Team, Pranav, ERP Team, Rajarshi, Amit D's Team, Abhishek, Abhijit Basu &amp; Team</p>
+
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Problem</th>
+          <th>What's Happening</th>
+          <th>Risk</th>
+          <th>Source</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr id="row-1" class="theme-Completeness">
+          <td class="num">1</td>
+          <td class="problem"><span class="pill Completeness">Completeness</span><div class="problem-text">The BI (Business Intelligence) space has only 2 pages, leaving customers with almost no documentation for this product</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> every product should have a fully built-out space.</div><div class="row"><b>Actual:</b> the BI space has only 2 pages.</div><div class="row"><b>Gap:</b> customers using BI have almost nothing to reference.</div></td>
+          <td class="risk">Customers get little to no self-serve support for this product, driving more tickets</td>
+          <td class="source">Rohit Khetan</td>
+          <td class="link"><a class="open-link" href="https://ginesysone.atlassian.net/wiki/spaces/GBI/overview" target="_blank" rel="noopener">↗</a></td>
+        </tr>
+
+        <tr class="theme-Completeness">
+          <td class="num">2</td>
+          <td class="problem"><span class="pill Completeness">Completeness</span><div class="problem-text">The EaseMyRetail space still shows Confluence's default placeholder template and has no real content</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> every product space should have real content.</div><div class="row"><b>Actual:</b> EaseMyRetail still shows Confluence's default, unedited template.</div><div class="row"><b>Gap:</b> there's no real content for this product at all.</div></td>
+          <td class="risk">Customers land on a page that looks unfinished, which can make the product itself seem unsupported</td>
+          <td class="source">Rohit Khetan</td>
+          <td class="link"><a class="open-link" href="https://ginesysone.atlassian.net/wiki/spaces/EMR/overview" target="_blank" rel="noopener">↗</a></td>
+        </tr>
+
+        <tr class="theme-Completeness">
+          <td class="num">3</td>
+          <td class="problem"><span class="pill Completeness">Completeness</span><div class="problem-text">The Browntape space has no homepage, so there's no entry point or content when a user opens it</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> every space should have a homepage orienting the user.</div><div class="row"><b>Actual:</b> Browntape has no homepage, Confluence shows its own "space doesn't have a homepage" message.</div><div class="row"><b>Gap:</b> there's no entry point into this space.</div></td>
+          <td class="risk">Poor first impression for anyone new to the product, users may leave the space immediately</td>
+          <td class="source">Rohit Khetan</td>
+          <td class="link"><a class="open-link" href="https://ginesysone.atlassian.net/wiki/spaces/EMR/overview" target="_blank" rel="noopener">↗</a></td>
+        </tr>
+
+        <tr class="theme-Completeness">
+          <td class="num">4</td>
+          <td class="problem"><span class="pill Completeness">Completeness</span><div class="problem-text">The POS space doesn't mention that setup must first be completed via the POS Management module in ERP</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> POS space should state that setup must be completed first via the POS Management module in ERP.</div><div class="row"><b>Actual:</b> this dependency is never mentioned.</div><div class="row"><b>Gap:</b> users can assume POS is configured independently, and it isn't.</div></td>
+          <td class="risk">Customers get stuck mid-setup and escalate to support for something the KB should have prevented</td>
+          <td class="source">Rohit Khetan</td>
+          <td class="link"><a class="open-link" href="https://ginesysone.atlassian.net/wiki/spaces/GPOS/overview" target="_blank" rel="noopener">↗</a></td>
+        </tr>
+
+        <tr class="theme-Completeness">
+          <td class="num">5</td>
+          <td class="problem"><span class="pill Completeness">Completeness</span><div class="problem-text">The KB homepage only lists ERP release notes, with no indication that other products even have release notes</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> every product's release notes should be available.</div><div class="row"><b>Actual:</b> the homepage only lists ERP release notes.</div><div class="row"><b>Gap:</b> other products' updates aren't documented anywhere.</div></td>
+          <td class="risk">Customers and internal teams assume no other product has shipped anything new</td>
+          <td class="source">Rohit Khetan</td>
+          <td class="link"><a class="open-link" href="https://ginesysone.atlassian.net/wiki/spaces/PUB/overview?mode=global" target="_blank" rel="noopener">↗</a></td>
+        </tr>
+
+        <tr class="theme-Completeness">
+          <td class="num">6</td>
+          <td class="problem"><span class="pill Completeness">Completeness</span><div class="problem-text">Release notes are published at a different time than the actual software update, instead of going out together</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> release notes should go out in sync with the update itself.</div><div class="row"><b>Actual:</b> they're published at different times, and patch details are often unclear.</div><div class="row"><b>Gap:</b> there's a timing mismatch between what ships and what's documented.</div></td>
+          <td class="risk">Customers see a feature before they see its documentation, or the reverse, causing confusion</td>
+          <td class="source">Abhishek, Amit D's Team</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Completeness">
+          <td class="num">7</td>
+          <td class="problem"><span class="pill Completeness">Completeness</span><div class="problem-text">There's no notification system to alert customers when Zwing POS features are released</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> customers should be notified when new Zwing features ship.</div><div class="row"><b>Actual:</b> no notification system exists for Zwing releases.</div><div class="row"><b>Gap:</b> customers only find out about updates by chance.</div></td>
+          <td class="risk">Customers miss features relevant to them, and may assume the product isn't evolving</td>
+          <td class="source">Amit D's Team</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Completeness">
+          <td class="num">8</td>
+          <td class="problem"><span class="pill Completeness">Completeness</span><div class="problem-text">The KB doesn't resolve most customer queries within a reasonable number of steps, so customers abandon it and go back to support anyway</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> customers should reach a working solution directly in the KB, typically within 1-2 steps.</div><div class="row"><b>Actual:</b> queries often go unanswered entirely, and even when an answer exists, it usually takes more than 2-3 steps to reach.</div><div class="row"><b>Gap:</b> the KB isn't functioning as a true self-serve resource.</div></td>
+          <td class="risk">Support load stays high, and customers abandon the search partway through instead of self-serving</td>
+          <td class="source">JP, Amit D's Team, Abhijit Basu &amp; Team</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Completeness">
+          <td class="num">9</td>
+          <td class="problem"><span class="pill Completeness">Completeness</span><div class="problem-text">There's no assessment or test component in the KB to check a new joiner's understanding during onboarding</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> new joiners should have a way to test their understanding as part of onboarding.</div><div class="row"><b>Actual:</b> no assessment exists in the KB.</div><div class="row"><b>Gap:</b> there's no way to verify a new joiner has actually learned the material.</div></td>
+          <td class="risk">Inconsistent product knowledge across the team, gaps only surface later on the job</td>
+          <td class="source">Abhijit Basu &amp; Team</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Completeness">
+          <td class="num">10</td>
+          <td class="problem"><span class="pill Completeness">Completeness</span><div class="problem-text">There's no process to notify a client by personalized email once a feature they specifically requested has been built and released</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> clients should be proactively told when a feature they asked for goes live.</div><div class="row"><b>Actual:</b> no such process exists, clients only find out if they happen to check the KB.</div><div class="row"><b>Gap:</b> clients may never learn their request was fulfilled.</div></td>
+          <td class="risk">Clients feel unheard even after being helped, hurting trust in the product roadmap process</td>
+          <td class="source">Abhishek</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr id="row-11" class="theme-Quality">
+          <td class="num">11</td>
+          <td class="problem"><span class="pill Quality">Quality</span><div class="problem-text">There's no process to archive or flag outdated/deprecated content, so old and current information sit side by side</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> outdated or removed content should be archived or clearly flagged.</div><div class="row"><b>Actual:</b> no such process exists.</div><div class="row"><b>Gap:</b> old and current content sit side by side with no way to tell them apart.</div></td>
+          <td class="risk">Customers can't distinguish valid guidance from obsolete guidance</td>
+          <td class="source">OMS Team, Pranav, JP, Rajarshi</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Quality">
+          <td class="num">12</td>
+          <td class="problem"><span class="pill Quality">Quality</span><div class="problem-text">Zwing is incorrectly labeled "Ginesys Mobile POS" on the homepage instead of its actual current product name</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> product names should be accurate.</div><div class="row"><b>Actual:</b> Zwing is labeled "Ginesys Mobile POS" on the homepage.</div><div class="row"><b>Gap:</b> the label doesn't match the product's actual current name.</div></td>
+          <td class="risk">Customers may not recognize the product they're looking for, or lose trust once they spot the error</td>
+          <td class="source">Rohit Khetan</td>
+          <td class="link"><a class="open-link" href="https://ginesysone.atlassian.net/wiki/spaces/PUB/overview?mode=global" target="_blank" rel="noopener">↗</a></td>
+        </tr>
+
+        <tr class="theme-Quality">
+          <td class="num">13</td>
+          <td class="problem"><span class="pill Quality">Quality</span><div class="problem-text">Some video titles don't match what the video actually covers, making it hard to know if it's relevant without watching</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> a video's title should reflect what it covers.</div><div class="row"><b>Actual:</b> some titles don't match the actual content.</div><div class="row"><b>Gap:</b> users can't tell if a video is relevant without watching it first.</div></td>
+          <td class="risk">Customers waste time on the wrong video, or skip a relevant one because the title didn't signal it</td>
+          <td class="source">Rohit Khetan</td>
+          <td class="link"><a class="open-link" href="https://ginesysone.atlassian.net/wiki/spaces/PUB/overview?mode=global" target="_blank" rel="noopener">↗</a></td>
+        </tr>
+
+        <tr class="theme-Quality">
+          <td class="num">14</td>
+          <td class="problem"><span class="pill Quality">Quality</span><div class="problem-text">Some instructions skip over small but necessary details for mandatory steps, leaving users unsure what to do</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> even mandatory steps should be spelled out clearly, down to the small details.</div><div class="row"><b>Actual:</b> some instructions skip detail that's actually needed.</div><div class="row"><b>Gap:</b> users are left guessing on steps that matter.</div></td>
+          <td class="risk">Customers get stuck on a mandatory step that wasn't fully explained</td>
+          <td class="source">Abhijit Basu &amp; Team</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Quality">
+          <td class="num">15</td>
+          <td class="problem"><span class="pill Quality">Quality</span><div class="problem-text">The KB is overwhelmingly text-heavy with very few videos, flowcharts, or images to aid understanding</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> complex topics should be supported with video, flowcharts, or images.</div><div class="row"><b>Actual:</b> the KB is overwhelmingly text-heavy.</div><div class="row"><b>Gap:</b> customers who'd understand faster visually have no such option.</div></td>
+          <td class="risk">This is the single most repeated ask across almost every stakeholder, comprehension suffers without it</td>
+          <td class="source">Vinay, OMS Team, Pranav, ERP Team, Rajarshi, Amit D's Team, Abhishek, Abhijit Basu &amp; Team</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Quality">
+          <td class="num">16</td>
+          <td class="problem"><span class="pill Quality">Quality</span><div class="problem-text">The KB isn't mobile-friendly. Only the ERP section is optimized for mobile, on every other product page, content gets cut off the screen and becomes unreadable</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> every KB page should be optimized for mobile, with content fitting the screen and staying readable.</div><div class="row"><b>Actual:</b> only the ERP section is optimized for mobile; on other product pages, content gets cut off the screen and is hard to read.</div><div class="row"><b>Gap:</b> most of the KB is unusable on mobile outside of ERP.</div></td>
+          <td class="risk">Customers on mobile can't properly read most of the KB outside ERP, and may give up or contact support instead</td>
+          <td class="source">Rohit Khetan</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr id="row-17" class="theme-Accessibility">
+          <td class="num">17</td>
+          <td class="problem"><span class="pill Accessibility">Accessibility</span><div class="problem-text">The entire KB is accessible to anyone with the link, with no separation between internal and customer-facing content</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> customers should only see content meant for them.</div><div class="row"><b>Actual:</b> the entire KB is open to anyone with a link, no access control.</div><div class="row"><b>Gap:</b> there's no way to control who sees what.</div></td>
+          <td class="risk">People outside the company, including competitors, could see internal or development information they were never meant to access</td>
+          <td class="source">Rohit Khetan</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Accessibility">
+          <td class="num">18</td>
+          <td class="problem"><span class="pill Accessibility">Accessibility</span><div class="problem-text">There's little to no hyperlinking between related pages within a module, making it hard to move between topics</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> related pages within a module should link to each other.</div><div class="row"><b>Actual:</b> hyperlinking is largely missing.</div><div class="row"><b>Gap:</b> users can't move between related topics directly.</div></td>
+          <td class="risk">Customers struggle to follow a workflow that spans multiple pages</td>
+          <td class="source">Rohit Khetan, Abhishek, Abhijit Basu &amp; Team</td>
+          <td class="link"><a class="open-link" href="https://ginesysone.atlassian.net/wiki/spaces/PUB/overview?mode=global" target="_blank" rel="noopener">↗</a></td>
+        </tr>
+
+        <tr class="theme-Accessibility">
+          <td class="num">19</td>
+          <td class="problem"><span class="pill Accessibility">Accessibility</span><div class="problem-text">Within the ERP section, there's no clear classification of which features or modules are cloud vs non-cloud, confusing users trying to find the right one</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> within ERP, cloud and non-cloud features/modules should be clearly classified so users know which applies to them.</div><div class="row"><b>Actual:</b> this classification is unclear within the ERP section.</div><div class="row"><b>Gap:</b> users can't tell which ERP features apply to cloud vs non-cloud setups.</div></td>
+          <td class="risk">Customers land in the wrong section repeatedly, adding friction to quick lookups</td>
+          <td class="source">Amit D's Team, Abhishek</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Accessibility">
+          <td class="num">20</td>
+          <td class="problem"><span class="pill Accessibility">Accessibility</span><div class="problem-text">Procurement features aren't classified or structured anywhere in the KB</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> procurement features should be clearly categorized.</div><div class="row"><b>Actual:</b> they aren't classified or structured.</div><div class="row"><b>Gap:</b> users can't tell where procurement-related help lives.</div></td>
+          <td class="risk">Customers guess their way through, or give up and contact support</td>
+          <td class="source">Amit D's Team</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Accessibility">
+          <td class="num">21</td>
+          <td class="problem"><span class="pill Accessibility">Accessibility</span><div class="problem-text">The Downloads page is a plain, undesigned HTML page, it looks unprofessional, almost like a suspicious website</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> the Downloads page should look like a proper, professional part of the KB.</div><div class="row"><b>Actual:</b> it's a plain HTML page with no design or branding.</div><div class="row"><b>Gap:</b> the page feels untrustworthy and out of place compared to the rest of the site.</div></td>
+          <td class="risk">Customers may hesitate to download files from a page that looks unofficial or untrustworthy</td>
+          <td class="source">Rohit Khetan</td>
+          <td class="link"><a class="open-link" href="http://support.ginesys.in/downloads/" target="_blank" rel="noopener">↗</a></td>
+        </tr>
+
+        <tr class="theme-Accessibility">
+          <td class="num">22</td>
+          <td class="problem"><span class="pill Accessibility">Accessibility</span><div class="problem-text">All KB content is in English only, which regional customers who don't read English can't use</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> content should be usable by all customers.</div><div class="row"><b>Actual:</b> everything is in English only.</div><div class="row"><b>Gap:</b> a large regional customer base can't use the KB at all.</div></td>
+          <td class="risk">These customers are fully dependent on support, raising support load specifically for this segment</td>
+          <td class="source">Pranav, Abhijit Basu &amp; Team</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Accessibility">
+          <td class="num">23</td>
+          <td class="problem"><span class="pill Accessibility">Accessibility</span><div class="problem-text">The KB is hosted on a third-party tool (Confluence) instead of being integrated into the company's own website</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> the KB should ideally be integrated into the company's own website.</div><div class="row"><b>Actual:</b> it's hosted on Confluence, separate from the main website.</div><div class="row"><b>Gap:</b> customers leave the product/website experience to reach docs.</div></td>
+          <td class="risk">Disjointed brand experience, the KB feels like an afterthought</td>
+          <td class="source">Abhijit Basu &amp; Team</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr id="row-24" class="theme-Standardisation">
+          <td class="num">24</td>
+          <td class="problem"><span class="pill Standardisation">Standardisation</span><div class="problem-text">There's no standard template for product pages, release notes, or onboarding material, so each one looks different depending on who wrote it</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> product pages, release notes, and onboarding material should each follow one standard template.</div><div class="row"><b>Actual:</b> none of them do; formatting varies by author.</div><div class="row"><b>Gap:</b> content looks inconsistent across the KB.</div></td>
+          <td class="risk">Customers and internal teams face an inconsistent experience across the KB, making both reading and maintaining content harder</td>
+          <td class="source">OMS Team, ERP Team, Rajarshi</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+        <tr class="theme-Standardisation">
+          <td class="num">25</td>
+          <td class="problem"><span class="pill Standardisation">Standardisation</span><div class="problem-text">The Software Guide combines both ERP and GPOS content into a single module instead of keeping them separate</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> ERP and POS should each have their own clearly scoped modules.</div><div class="row"><b>Actual:</b> one guide currently combines both.</div><div class="row"><b>Gap:</b> there's no clean separation between the two products.</div></td>
+          <td class="risk">Customers wade through unrelated content looking for product-specific help</td>
+          <td class="source">Rohit Khetan</td>
+          <td class="link"><a class="open-link" href="https://ginesysone.atlassian.net/wiki/spaces/PUB/pages/28824920/Ginesys+ERP" target="_blank" rel="noopener">↗</a></td>
+        </tr>
+
+        <tr class="theme-Standardisation">
+          <td class="num">26</td>
+          <td class="problem"><span class="pill Standardisation">Standardisation</span><div class="problem-text">The KB's UI, design, and navigation feel outdated and don't match the modern look of the actual product</div></td>
+          <td class="happening"><div class="row"><b>Expected:</b> the KB's UI should reflect the same modern look as the product.</div><div class="row"><b>Actual:</b> the KB's design and navigation feel outdated by comparison.</div><div class="row"><b>Gap:</b> there's a visual disconnect between using the product and using its docs.</div></td>
+          <td class="risk">Customers may perceive the product itself as outdated, purely from the KB's appearance</td>
+          <td class="source">JP, ERP Team</td>
+          <td class="link"><span class="dash">—</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <div class="next-steps">
+    <h2 class="section-title">Next Steps</h2>
+    <ol class="steps">
+      <li>
+        <strong>Build a checklist of improvements needed for the KB</strong>
+        based on all the feedback above
+      </li>
+      <li>
+        <strong>Study how other brands/competitors manage their KB</strong>
+        competitor analysis, to see what's working elsewhere
+      </li>
+      <li>
+        <strong>Put everything into one tracked list</strong>
+        with priority, effort, and risk
+      </li>
+      <li>
+        <strong>Design a plan for the KB revamp</strong>
+        final solution, prototype, and implementation plan
+      </li>
+    </ol>
+  </div>
+</main>
+
+</body>
+</html>
